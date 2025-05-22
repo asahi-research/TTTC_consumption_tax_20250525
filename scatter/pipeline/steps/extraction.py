@@ -48,7 +48,7 @@ def extract_batch(batch, prompt, model, workers):
             
 def extract_arguments(input, prompt, model, retries=1):
     # OpenAIクライアント初期化
-    llm = openai.OpenAI(api_key="sk-----")  # ← ここにご自身のキー
+    llm = openai.OpenAI()
     # モデル呼び出し
     response = llm.chat.completions.create(
         model=model,
