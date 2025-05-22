@@ -17,7 +17,7 @@ def overview(config):
     labels = pd.read_csv(f"outputs/{dataset}/labels.csv")
 
     prompt = config['overview']['prompt']
-    model = "o4-mini-2025-04-16"
+    model = config['extraction']['model']
 
     ids = labels['cluster-id'].to_list()
     takeaways.set_index('cluster-id', inplace=True)
@@ -28,8 +28,10 @@ def overview(config):
         input += f"# Cluster {i}/{len(ids)}: {labels.loc[id]['label']}\n\n"
         input += takeaways.loc[id]['takeaways'] + '\n\n'
 
+    #llm = ChatOpenAI(model_name=model, temperature=0.0)
+    #response = llm(messages=messages(prompt, input)).content.strip()
     # OpenAIクライアント初期化
-    llm = openai.OpenAI(api_key="sk-----")  # ← ここにご自身のキー
+    llm = openai.OpenAI()
     # モデル呼び出し
     response = llm.chat.completions.create(
         model=model,
