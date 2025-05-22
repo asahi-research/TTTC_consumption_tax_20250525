@@ -19,7 +19,7 @@ def labelling(config):
 
     sample_size = config['labelling']['sample_size']
     prompt = config['labelling']['prompt']
-    model = "o4-mini-2025-04-16"
+    model = config['extraction']['model']
 
     question = config['question']
     cluster_ids = clusters['cluster-id'].unique()
@@ -53,7 +53,7 @@ def labelling(config):
 def generate_label(question, args_sample, args_sample_outside, prompt, model):
     #llm = ChatOpenAI(model_name=model, temperature=0.0)
     # OpenAIクライアント初期化
-    llm = openai.OpenAI(api_key="sk-----")  # ← ここにご自身のキー
+    llm = openai.OpenAI() 
 
     outside = '\n * ' + '\n * '.join(args_sample_outside)
     inside = '\n * ' + '\n * '.join(args_sample)
