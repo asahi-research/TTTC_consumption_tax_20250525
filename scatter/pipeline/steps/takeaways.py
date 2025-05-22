@@ -20,9 +20,7 @@ def takeaways(config):
 
     sample_size = config['takeaways']['sample_size']
     prompt = config['takeaways']['prompt']
-    model = "o4-mini-2025-04-16"
-
-    model = config.get('model_takeaways', config.get('model', 'gpt3.5-turbo'))
+    model = config['extraction']['model']
     cluster_ids = clusters['cluster-id'].unique()
 
     update_progress(config, total=len(cluster_ids))
@@ -46,7 +44,7 @@ def generate_takeaways(args_sample, prompt, model):
     #llm = ChatOpenAI(model_name=model, temperature=0.0)
     input = "\n".join(args_sample)
     # OpenAIクライアント初期化
-    llm = openai.OpenAI(api_key="sk-----")  # ← ここにご自身のキー
+    llm = openai.OpenAI()
     # モデル呼び出し
     response = llm.chat.completions.create(
         model=model,
