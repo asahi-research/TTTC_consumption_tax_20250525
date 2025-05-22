@@ -1,0 +1,15 @@
+{
+  "name": "",
+  "question": "消費税減税に対するX（旧Twitter）上での反応",
+  "input": "shohizei_genzei_del_simi_rt",
+  "model": "o4-mini-2025-04-16",
+  "extraction": {
+    "workers": 40,
+    "limit": 100000,
+    "prompt_file": "extraction_poli"
+  },
+  "clustering": {
+    "clusters": 15
+  },
+  "intro": "ユーザーローカル社のSNS分析ツール「ソーシャルインサイト」を使い、「消費税」と「減税」の両方の言葉、または「消費減税」のいずれかが含まれる投稿を５月９日から３日間で抽出し分析。"
+}

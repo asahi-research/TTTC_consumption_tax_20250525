@@ -1,0 +1,95 @@
+name: tests
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      - name: Write VITE_PYTHON_LAMBDA_SECRET to .env
+        run: |
+          echo "VITE_PYTHON_LAMBDA_SECRET=${{ secrets.VITE_PYTHON_LAMBDA_SECRET }}" > turbo/.env
+        shell: bash
+
+      - name: Install dependencies
+        run: cd turbo && npm install --force
+
+      - name: Run tests
+        run: cd turbo && npm run test
+
+#      - name: Run linting
+#        run: cd turbo && npm run lint
+
+  buildAPI:
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          distribution: "adopt"
+          java-version: 11
+
+      - name: Download swagger-codegen-cli.jar
+        run: cd turbo && wget https://repo1.maven.org/maven2/io/swagger/codegen/v3/swagger-codegen-cli/3.0.24/swagger-codegen-cli-3.0.24.jar -O swagger-codegen-cli.jar
+
+      - name: Create output directory
+        run: cd turbo && mkdir -p src/python-api/
+
+      - name: Generate Python API client
+        run: cd turbo && java --add-opens java.base/java.util=ALL-UNNAMED -jar swagger-codegen-cli.jar generate -i static/swagger.json -l python -o src/python-api/
+
+      - name: Zip Python API client
+        run: cd turbo && zip -r python-api.zip src/python-api/
+
+      - name: Upload Python API client
+        uses: actions/upload-artifact@v2
+        with:
+          name: python-api
+          path: turbo/python-api.zip
+
+  testLiveSite:
+    if: github.repository == 'AIObjectives/talk-to-the-city-reports'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checking out repo
+        uses: actions/checkout@v3
+      - name: Setting up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Installing package list
+        run: apt list --installed
+      - name: Removing previous chrome instances on runner
+        run: sudo apt purge google-chrome-stable
+
+      - name: Installing all necessary packages
+        run: pip install chromedriver-autoinstaller selenium pyvirtualdisplay
+      - name: Install xvfb
+        run: sudo apt-get install xvfb
+
+      - name: Run tests
+        run: |
+          export DISPLAY=:99
+          python turbo/src/test/test_selenium.py
