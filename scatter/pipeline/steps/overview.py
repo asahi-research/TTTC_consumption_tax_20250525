@@ -17,7 +17,7 @@ def overview(config):
     labels = pd.read_csv(f"outputs/{dataset}/labels.csv")
 
     prompt = config['overview']['prompt']
-    model = config['extraction']['model']
+    model = config['overview']['model']
 
     ids = labels['cluster-id'].to_list()
     takeaways.set_index('cluster-id', inplace=True)
