@@ -20,7 +20,8 @@ def takeaways(config):
 
     sample_size = config['takeaways']['sample_size']
     prompt = config['takeaways']['prompt']
-    model = config['extraction']['model']
+    model = config['takeaways']['model']
+    
     cluster_ids = clusters['cluster-id'].unique()
 
     update_progress(config, total=len(cluster_ids))
