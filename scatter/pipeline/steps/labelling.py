@@ -19,7 +19,7 @@ def labelling(config):
 
     sample_size = config['labelling']['sample_size']
     prompt = config['labelling']['prompt']
-    model = config['extraction']['model']
+    model = config['labelling']['model']
 
     question = config['question']
     cluster_ids = clusters['cluster-id'].unique()
